@@ -1,0 +1,1821 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitForge — The Definitive GitHub & Git Masterclass</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind Configuration -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['"Fira Code"', 'monospace'],
+          },
+          colors: {
+            git: {
+              orange: '#F05032',
+              purple: '#8B5CF6',
+              emerald: '#10B981',
+              blue: '#3B82F6',
+              dark: '#0D1117',
+              surface: '#161B22',
+              border: '#30363D'
+            }
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 4s ease-in-out infinite',
+            'glow': 'glow 2.5s ease-in-out infinite alternate',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-8px)' },
+            },
+            glow: {
+              '0%': { boxShadow: '0 0 15px rgba(139, 92, 246, 0.2)' },
+              '100%': { boxShadow: '0 0 30px rgba(59, 130, 246, 0.4)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0d1117;
+    }
+    .dark ::-webkit-scrollbar-track {
+      background: #0d1117;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #30363d;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #484f58;
+    }
+
+    /* Subtle grid background */
+    .bg-grid-pattern {
+      background-size: 32px 32px;
+      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    }
+    .light .bg-grid-pattern {
+      background-image: linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    }
+
+    .glassmorphism {
+      background: rgba(22, 27, 34, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .light .glassmorphism {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .node-commit {
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+  </style>
+</head>
+
+<body class="bg-[#090D12] text-slate-100 font-sans transition-colors duration-300 selection:bg-purple-500 selection:text-white antialiased">
+  
+  <!-- Navigation Header -->
+  <header class="fixed top-0 left-0 right-0 z-50 glassmorphism border-b border-white/5 transition-all duration-300" id="main-header">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center space-x-3 group">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-500 to-blue-500 p-0.5 shadow-lg shadow-purple-500/20 group-hover:scale-105 transition-transform">
+          <div class="w-full h-full bg-[#0D1117] rounded-[10px] flex items-center justify-center text-white">
+            <i data-lucide="git-merge" class="w-5 h-5 text-purple-400 group-hover:rotate-45 transition-transform"></i>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-lg font-bold tracking-tight text-white group-hover:text-purple-400 transition-colors flex items-center gap-1.5">
+            GitForge <span class="text-[10px] uppercase font-mono px-1.5 py-0.5 bg-purple-500/20 text-purple-300 rounded border border-purple-500/30">Pro</span>
+          </span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-300">
+        <a href="#simulator" class="hover:text-purple-400 transition-colors">Visual Simulator</a>
+        <a href="#cheatsheet" class="hover:text-purple-400 transition-colors">Interactive Cheatsheet</a>
+        <a href="#sandbox" class="hover:text-purple-400 transition-colors">Terminal Sandbox</a>
+        <a href="#curriculum" class="hover:text-purple-400 transition-colors">Curriculum</a>
+        <a href="#pricing" class="hover:text-purple-400 transition-colors">Enroll</a>
+        <a href="#faq" class="hover:text-purple-400 transition-colors">FAQ</a>
+      </nav>
+
+      <!-- Right Action Items -->
+      <div class="flex items-center space-x-3">
+        <!-- Theme Toggle -->
+        <button id="theme-toggle" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 transition-colors" title="Toggle Theme" aria-label="Toggle Theme">
+          <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+          <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+        </button>
+
+        <!-- CTA Button -->
+        <a href="#pricing" class="hidden sm:inline-flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 hover:-translate-y-0.5 transition-all">
+          <span>Start Learning Free</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+
+        <!-- Mobile Menu Toggle -->
+        <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300" aria-label="Toggle Menu">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Drawer -->
+    <div id="mobile-drawer" class="hidden md:hidden px-4 pt-2 pb-6 border-t border-white/10 bg-[#0D1117] flex-col space-y-3">
+      <a href="#simulator" class="mobile-link py-2 text-slate-200 font-medium">Visual Simulator</a>
+      <a href="#cheatsheet" class="mobile-link py-2 text-slate-200 font-medium">Interactive Cheatsheet</a>
+      <a href="#sandbox" class="mobile-link py-2 text-slate-200 font-medium">Terminal Sandbox</a>
+      <a href="#curriculum" class="mobile-link py-2 text-slate-200 font-medium">Curriculum</a>
+      <a href="#pricing" class="mobile-link py-2 text-slate-200 font-medium">Pricing</a>
+      <a href="#faq" class="mobile-link py-2 text-slate-200 font-medium">FAQ</a>
+      <a href="#pricing" class="w-full text-center py-2.5 rounded-xl bg-purple-600 font-semibold text-white">Enroll Now</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-grid-pattern">
+    <!-- Ambient Glow Drops -->
+    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] bg-gradient-to-tr from-purple-600/20 via-blue-600/20 to-emerald-500/10 blur-[130px] -z-10 pointer-events-none"></div>
+    <div class="absolute -top-20 -left-20 w-80 h-80 bg-purple-600/15 rounded-full blur-[100px] pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left: Copy & Value Proposition -->
+        <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+          
+          <!-- Announcement pill -->
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/25 text-xs font-mono text-purple-300">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>2026 Edition: GitHub Actions & AI-Assisted PRs Included</span>
+          </div>
+
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.12]">
+            From <code class="text-purple-400 font-mono bg-purple-950/40 px-2 py-0.5 rounded border border-purple-700/50">git init</code> <br class="hidden sm:inline" />
+            to Open-Source <span class="bg-gradient-to-r from-purple-400 via-indigo-300 to-blue-400 bg-clip-text text-transparent">Legend</span>.
+          </h1>
+
+          <p class="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
+            Stop fearing merge conflicts and accidental detached HEAD states. Master the internal graph mechanics of Git, collaborate seamlessly on GitHub, automate workflows with Actions, and ship code with ironclad confidence.
+          </p>
+
+          <!-- CTAs -->
+          <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+            <a href="#simulator" class="w-full sm:w-auto px-7 py-3.5 rounded-xl text-base font-semibold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white shadow-xl shadow-purple-600/25 hover:shadow-purple-600/40 transition-all flex items-center justify-center gap-2">
+              <i data-lucide="play" class="w-4 h-4 fill-white"></i>
+              <span>Launch Interactive Lab</span>
+            </a>
+            <a href="#curriculum" class="w-full sm:w-auto px-6 py-3.5 rounded-xl text-base font-semibold bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-colors flex items-center justify-center gap-2">
+              <i data-lucide="book-open" class="w-4 h-4 text-slate-400"></i>
+              <span>View Full Syllabus</span>
+            </a>
+          </div>
+
+          <!-- Social Proof Bar -->
+          <div class="pt-6 border-t border-white/10 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-slate-400 text-xs sm:text-sm font-medium">
+            <div class="flex items-center -space-x-2">
+              <img class="w-8 h-8 rounded-full border-2 border-[#090D12]" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Student avatar" />
+              <img class="w-8 h-8 rounded-full border-2 border-[#090D12]" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" alt="Student avatar" />
+              <img class="w-8 h-8 rounded-full border-2 border-[#090D12]" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80" alt="Student avatar" />
+              <img class="w-8 h-8 rounded-full border-2 border-[#090D12]" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80" alt="Student avatar" />
+              <div class="w-8 h-8 rounded-full border-2 border-[#090D12] bg-purple-900/90 text-purple-200 text-xs font-bold flex items-center justify-center">
+                +4k
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 text-amber-400">
+              <i data-lucide="star" class="w-4 h-4 fill-amber-400 text-amber-400"></i>
+              <span class="font-bold text-slate-200">4.96/5</span>
+              <span class="text-slate-400 font-normal">(1,840+ devs leveled up)</span>
+            </div>
+
+            <div class="flex items-center gap-1.5 text-slate-300">
+              <i data-lucide="github" class="w-4 h-4"></i>
+              <span>8.4k GitHub Stars</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Animated Live Terminal Showcase -->
+        <div class="lg:col-span-5">
+          <div class="relative mx-auto max-w-lg rounded-2xl bg-[#0d1117] border border-white/10 shadow-2xl shadow-purple-950/40 overflow-hidden font-mono text-xs sm:text-sm">
+            
+            <!-- Terminal Header -->
+            <div class="flex items-center justify-between px-4 py-3 bg-[#161b22] border-b border-white/10">
+              <div class="flex items-center space-x-2">
+                <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
+                <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
+              </div>
+              <div class="flex items-center space-x-1.5 text-slate-400 text-xs">
+                <i data-lucide="terminal" class="w-3.5 h-3.5 text-purple-400"></i>
+                <span>bash — gitforge-demo ~ 80x24</span>
+              </div>
+              <button id="terminal-replay-btn" class="text-slate-400 hover:text-white transition-colors" title="Replay Terminal Animation">
+                <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+
+            <!-- Terminal Body -->
+            <div id="hero-terminal-body" class="p-5 space-y-3 min-h-[300px] leading-relaxed text-slate-300">
+              <!-- Dynamically populated typing lines -->
+            </div>
+
+            <!-- Terminal status bar -->
+            <div class="px-4 py-2 bg-[#12161c] border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400">
+              <div class="flex items-center gap-2">
+                <span class="text-purple-400 font-semibold">main</span>
+                <span class="text-slate-600">|</span>
+                <span class="text-emerald-400">● clean</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <i data-lucide="git-branch" class="w-3 h-3 text-purple-400"></i>
+                <span>origin/main synced</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Visual Git Workflow Simulator Section -->
+  <section id="simulator" class="py-20 bg-[#0B0F15] border-y border-white/5 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-12 space-y-3">
+        <span class="text-purple-400 font-mono text-sm tracking-wider uppercase font-semibold">Interactive Sandbox</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Visual Git Architecture Simulator</h2>
+        <p class="text-slate-300 text-sm sm:text-base">
+          Git is not magic—it's a Directed Acyclic Graph (DAG) connecting snapshots. Click the commands below to see changes migrate across Git's four memory zones in real-time.
+        </p>
+      </div>
+
+      <!-- Controls Panel -->
+      <div class="flex flex-wrap items-center justify-center gap-2.5 mb-8">
+        <button id="sim-btn-edit" class="px-3.5 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs sm:text-sm font-mono flex items-center gap-2 text-slate-200 transition-all hover:scale-105 active:scale-95">
+          <i data-lucide="file-plus" class="w-4 h-4 text-amber-400"></i>
+          <span>1. Edit File</span>
+        </button>
+        <button id="sim-btn-add" class="px-3.5 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs sm:text-sm font-mono flex items-center gap-2 text-slate-200 transition-all hover:scale-105 active:scale-95">
+          <i data-lucide="layers" class="w-4 h-4 text-emerald-400"></i>
+          <span>2. git add .</span>
+        </button>
+        <button id="sim-btn-commit" class="px-3.5 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs sm:text-sm font-mono flex items-center gap-2 text-slate-200 transition-all hover:scale-105 active:scale-95">
+          <i data-lucide="check-circle-2" class="w-4 h-4 text-purple-400"></i>
+          <span>3. git commit -m</span>
+        </button>
+        <button id="sim-btn-push" class="px-3.5 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs sm:text-sm font-mono flex items-center gap-2 text-slate-200 transition-all hover:scale-105 active:scale-95">
+          <i data-lucide="upload-cloud" class="w-4 h-4 text-blue-400"></i>
+          <span>4. git push origin</span>
+        </button>
+        <button id="sim-btn-branch" class="px-3.5 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs sm:text-sm font-mono flex items-center gap-2 text-slate-200 transition-all hover:scale-105 active:scale-95">
+          <i data-lucide="git-branch" class="w-4 h-4 text-pink-400"></i>
+          <span>Branch feat/auth</span>
+        </button>
+        <button id="sim-btn-reset" class="px-3 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-xs sm:text-sm font-mono flex items-center gap-1.5 text-red-400 transition-colors" title="Reset Simulator">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+          <span>Reset</span>
+        </button>
+      </div>
+
+      <!-- 4 Zones Visual Canvas -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-5 rounded-2xl bg-[#0D1117] border border-white/10 shadow-2xl relative">
+        
+        <!-- Zone 1: Working Directory -->
+        <div class="rounded-xl bg-[#161B22]/70 border border-white/5 p-4 flex flex-col min-h-[340px] relative transition-colors" id="zone-working">
+          <div class="flex items-center justify-between pb-3 border-b border-white/5 mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+              <h3 class="font-semibold text-sm text-slate-200">Working Tree</h3>
+            </div>
+            <span class="text-[10px] font-mono text-slate-400">Unstaged</span>
+          </div>
+          <p class="text-xs text-slate-400 mb-3">Your raw local files. Changes exist only on your filesystem disk.</p>
+          
+          <div id="working-files-container" class="space-y-2 flex-1 flex flex-col justify-start">
+            <div class="file-item p-2.5 rounded-lg bg-white/5 border border-white/5 text-xs font-mono flex items-center justify-between text-slate-300">
+              <span class="flex items-center gap-1.5"><i data-lucide="file-code" class="w-3.5 h-3.5 text-blue-400"></i> app.js</span>
+              <span class="text-[10px] text-slate-400 font-sans">tracked</span>
+            </div>
+          </div>
+          <div class="mt-2 pt-2 border-t border-white/5 text-[11px] font-mono text-slate-400 flex items-center justify-between">
+            <span>status:</span>
+            <span id="working-status" class="text-slate-300">Ready</span>
+          </div>
+        </div>
+
+        <!-- Zone 2: Staging Area (Index) -->
+        <div class="rounded-xl bg-[#161B22]/70 border border-white/5 p-4 flex flex-col min-h-[340px] relative transition-colors" id="zone-staging">
+          <div class="flex items-center justify-between pb-3 border-b border-white/5 mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+              <h3 class="font-semibold text-sm text-slate-200">Staging Area</h3>
+            </div>
+            <span class="text-[10px] font-mono text-emerald-400/90 font-medium">Index</span>
+          </div>
+          <p class="text-xs text-slate-400 mb-3">The staging index holding pre-commit snapshot preparation.</p>
+          
+          <div id="staging-files-container" class="space-y-2 flex-1 flex flex-col justify-start">
+            <div class="empty-state text-center text-xs text-slate-400 my-auto py-8">
+              No files staged for commit.<br><span class="text-[11px] text-slate-400 font-mono">Use 'git add'</span>
+            </div>
+          </div>
+          <div class="mt-2 pt-2 border-t border-white/5 text-[11px] font-mono text-slate-400 flex items-center justify-between">
+            <span>staged:</span>
+            <span id="staging-status" class="text-emerald-400">0 files</span>
+          </div>
+        </div>
+
+        <!-- Zone 3: Local Repository (.git) -->
+        <div class="rounded-xl bg-[#161B22]/70 border border-white/5 p-4 flex flex-col min-h-[340px] relative transition-colors" id="zone-local">
+          <div class="flex items-center justify-between pb-3 border-b border-white/5 mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
+              <h3 class="font-semibold text-sm text-slate-200">Local Repository</h3>
+            </div>
+            <span class="text-[10px] font-mono text-purple-400">HEAD</span>
+          </div>
+          <p class="text-xs text-slate-400 mb-3">Your local DAG commit history stored in the <code class="text-purple-300">.git</code> database.</p>
+          
+          <div id="local-commits-container" class="space-y-2 flex-1 overflow-y-auto max-h-[190px] pr-1">
+            <!-- Commits inserted via JS -->
+          </div>
+          <div class="mt-2 pt-2 border-t border-white/5 text-[11px] font-mono text-slate-400 flex items-center justify-between">
+            <span>active branch:</span>
+            <span id="sim-active-branch" class="text-purple-300 font-bold">main</span>
+          </div>
+        </div>
+
+        <!-- Zone 4: Remote GitHub -->
+        <div class="rounded-xl bg-[#161B22]/70 border border-white/5 p-4 flex flex-col min-h-[340px] relative transition-colors" id="zone-remote">
+          <div class="flex items-center justify-between pb-3 border-b border-white/5 mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
+              <h3 class="font-semibold text-sm text-slate-200">GitHub (origin)</h3>
+            </div>
+            <span class="text-[10px] font-mono text-blue-400">Cloud Sync</span>
+          </div>
+          <p class="text-xs text-slate-400 mb-3">Hosted remote repository enabling pull requests & CI/CD automation.</p>
+          
+          <div id="remote-commits-container" class="space-y-2 flex-1 overflow-y-auto max-h-[190px] pr-1">
+            <!-- Remote commits inserted via JS -->
+          </div>
+          <div class="mt-2 pt-2 border-t border-white/5 text-[11px] font-mono text-slate-400 flex items-center justify-between">
+            <span>sync status:</span>
+            <span id="remote-status" class="text-slate-300">Synchronized</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Simulator Interactive Log Notification -->
+      <div id="simulator-feedback" class="mt-4 px-4 py-3 rounded-xl bg-purple-950/30 border border-purple-800/40 text-xs sm:text-sm font-mono text-purple-200 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <i data-lucide="info" class="w-4 h-4 text-purple-400 flex-shrink-0"></i>
+          <span id="sim-feedback-msg">Ready! Click "1. Edit File" to modify code in your working directory.</span>
+        </div>
+        <span class="text-[11px] text-slate-400 hidden sm:inline">Interactive Sandbox Engine v2.4</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Interactive Cheatsheet Section -->
+  <section id="cheatsheet" class="py-20 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-10 space-y-3">
+        <span class="text-purple-400 font-mono text-sm tracking-wider uppercase font-semibold">Rapid Reference</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white">The Ultimate Git & GitHub Cheatsheet</h2>
+        <p class="text-slate-300 text-sm sm:text-base">
+          Battle-tested Git commands categorized by daily developer workflows. Search, filter, and copy commands directly with real-world explanations.
+        </p>
+      </div>
+
+      <!-- Search & Filter Controls -->
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+        <!-- Search bar -->
+        <div class="relative w-full md:w-80">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+          <input 
+            type="text" 
+            id="cheatsheet-search" 
+            placeholder="Search e.g. 'undo', 'branch', 'rebase'..." 
+            aria-label="Search git commands"
+            class="w-full pl-10 pr-4 py-2.5 bg-[#161B22] border border-white/10 rounded-xl text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all font-mono"
+          />
+        </div>
+
+        <!-- Filter category tags -->
+        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto" id="cheatsheet-tags">
+          <button class="cs-filter-btn px-3.5 py-1.5 rounded-lg text-xs font-medium bg-purple-600 text-white transition-colors" data-tag="all">All Commands</button>
+          <button class="cs-filter-btn px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 border border-white/5 transition-colors" data-tag="everyday">Everyday</button>
+          <button class="cs-filter-btn px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 border border-white/5 transition-colors" data-tag="branching">Branching</button>
+          <button class="cs-filter-btn px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 border border-white/5 transition-colors" data-tag="undoing">Emergency & Undoing</button>
+          <button class="cs-filter-btn px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 border border-white/5 transition-colors" data-tag="remote">Remote & GitHub</button>
+        </div>
+      </div>
+
+      <!-- Cheatsheet Cards Grid -->
+      <div id="cheatsheet-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Generated dynamically via JS -->
+      </div>
+
+      <!-- Toast for Copy Notification -->
+      <div id="copy-toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2 px-4 py-3 rounded-xl bg-purple-900 border border-purple-400 text-white text-sm shadow-xl">
+        <i data-lucide="check" class="w-4 h-4 text-emerald-300"></i>
+        <span id="toast-text">Command copied to clipboard!</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Interactive Mini-Terminal Challenge Sandbox -->
+  <section id="sandbox" class="py-20 bg-[#0B0F15] border-y border-white/5 relative">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-12 space-y-3">
+        <span class="text-emerald-400 font-mono text-sm tracking-wider uppercase font-semibold">Hands-on Practice</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Live Terminal Challenge Sandbox</h2>
+        <p class="text-slate-300 text-sm sm:text-base">
+          Test your muscle memory right in your browser. Solve guided challenges or run arbitrary commands like <code class="text-emerald-300 font-mono">git status</code>, <code class="text-emerald-300 font-mono">git add .</code>, or <code class="text-emerald-300 font-mono">git log</code>.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- Challenge Selector Column -->
+        <div class="lg:col-span-4 space-y-4">
+          <div class="rounded-2xl bg-[#161B22] border border-white/10 p-5 space-y-4">
+            <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+              <i data-lucide="target" class="w-4 h-4 text-purple-400"></i>
+              <span>Active Challenge</span>
+            </h3>
+
+            <div id="challenge-meta" class="space-y-2">
+              <div class="text-base font-bold text-white" id="challenge-title">Mission 1: Stage and Ship</div>
+              <p class="text-xs text-slate-300 leading-relaxed" id="challenge-desc">
+                You just finished modifying <code class="text-amber-300">index.js</code>. Run the command to stage all modified files to the Git index.
+              </p>
+              <div class="pt-2">
+                <span class="text-[11px] font-mono px-2 py-1 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">Target: git add .</span>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-medium">
+              <button id="prev-challenge-btn" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 transition-colors flex items-center gap-1">
+                <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i> Prev
+              </button>
+              <span id="challenge-counter" class="text-slate-400 font-mono">1 of 4</span>
+              <button id="next-challenge-btn" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 transition-colors flex items-center gap-1">
+                Next <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Hint Box -->
+          <div class="rounded-xl bg-purple-950/20 border border-purple-500/20 p-4 text-xs text-purple-200/90 flex items-start gap-3">
+            <i data-lucide="lightbulb" class="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5"></i>
+            <div>
+              <span class="font-bold text-white block mb-0.5">Pro Tip:</span>
+              Type <code class="font-mono text-purple-300">help</code> in the terminal to see available sandbox commands, or <code class="font-mono text-purple-300">hint</code> if you get stuck.
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Terminal Simulator -->
+        <div class="lg:col-span-8">
+          <div class="rounded-2xl bg-[#0D1117] border border-white/10 shadow-2xl overflow-hidden font-mono text-xs sm:text-sm">
+            
+            <!-- Window Bar -->
+            <div class="flex items-center justify-between px-4 py-2.5 bg-[#161B22] border-b border-white/10">
+              <div class="flex items-center space-x-2">
+                <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
+                <span class="text-xs text-slate-400 ml-2 font-sans font-medium">Git Interactive Shell</span>
+              </div>
+              <button id="clear-sandbox-btn" class="text-xs text-slate-400 hover:text-white transition-colors" title="Clear Console">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+
+            <!-- Terminal Output Window -->
+            <div id="sandbox-output" class="p-4 h-[300px] overflow-y-auto space-y-2 text-slate-300 scroll-smooth">
+              <div class="text-slate-400">Welcome to GitForge Sandbox v2.4 (x86_64-apple-darwin23)</div>
+              <div class="text-slate-400">Initialized local Git environment on branch <span class="text-purple-400 font-bold">main</span>.</div>
+              <div class="text-emerald-400">Type 'help' to review simulated commands or solve the prompt on the left.</div>
+            </div>
+
+            <!-- Interactive Command Line Prompt -->
+            <form id="sandbox-form" class="flex items-center px-4 py-3 bg-[#12161D] border-t border-white/10">
+              <span class="text-emerald-400 font-bold mr-2 select-none">developer@gitforge:~$</span>
+              <input 
+                type="text" 
+                id="sandbox-input" 
+                autocomplete="off" 
+                spellcheck="false" 
+                placeholder="git status..."
+                aria-label="Git Terminal Command Input"
+                class="flex-1 bg-transparent text-white font-mono text-xs sm:text-sm outline-none placeholder-slate-400"
+              />
+              <button type="submit" class="px-3 py-1 rounded bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold">
+                Run
+              </button>
+            </form>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Curriculum Breakdown Section -->
+  <section id="curriculum" class="py-20 relative">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-14 space-y-3">
+        <span class="text-purple-400 font-mono text-sm tracking-wider uppercase font-semibold">Structured Syllabus</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Comprehensive 6-Module Roadmap</h2>
+        <p class="text-slate-300 text-sm sm:text-base">
+          From the low-level object store (blobs, trees, commits) to automating multi-stage production deployments on GitHub Enterprise.
+        </p>
+      </div>
+
+      <!-- Curriculum Accordions -->
+      <div class="space-y-4" id="curriculum-accordion">
+        
+        <!-- Module 1 -->
+        <div class="curriculum-item rounded-2xl bg-[#161B22] border border-white/10 overflow-hidden transition-all duration-300">
+          <button class="curriculum-header w-full px-6 py-5 flex items-center justify-between text-left hover:bg-white/[0.02] transition-colors">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center font-mono font-bold text-sm">
+                01
+              </div>
+              <div>
+                <h3 class="text-base sm:text-lg font-bold text-white">Git Fundamentals & The Internal Graph</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Blobs, Trees, SHA-1 Hashes, Staging Mechanics, and HEAD Pointer</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="hidden sm:inline text-xs font-mono px-2.5 py-1 bg-white/5 rounded-full text-slate-300">6 Lessons • 2h 15m</span>
+              <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transform transition-transform duration-300"></i>
+            </div>
+          </button>
+          <div class="curriculum-content hidden px-6 pb-6 pt-2 text-sm text-slate-300 border-t border-white/5 space-y-2.5">
+            <div class="flex items-center justify-between py-1.5 border-b border-white/5 text-xs">
+              <span class="flex items-center gap-2"><i data-lucide="play-circle" class="w-4 h-4 text-purple-400"></i> How Git actually works under the hood (Directed Acyclic Graphs)</span>
+              <span class="text-slate-400 font-mono">18m</span>
+            </div>
+            <div class="flex items-center justify-between py-1.5 border-b border-white/5 text-xs">
+              <span class="flex items-center gap-2"><i data-lucide="play-circle" class="w-4 h-4 text-purple-400"></i> The 4 Core Stages: Working Directory, Index, Repo, Remote</span>
+              <span class="text-slate-400 font-mono">24m</span>
+            </div>
+            <div class="flex items-center justify-between py-1.5 border-b border-white/5 text-xs">
+              <span class="flex items-center gap-2"><i data-lucide="play-circle" class="w-4 h-4 text-purple-400"></i> Dissecting the .git folder: objects, refs, and HEAD pointers</span>
+              <span class="text-slate-400 font-mono">31m</span>
+            </div>
+            <div class="flex items-center justify-between py-1.5 text-xs">
+              <span class="flex items-center gap-2"><i data-lucide="code" class="w-4 h-4 text-emerald-400"></i> Lab: Reconstructing corrupted Git repositories by hand</span>
+              <span class="text-emerald-400 font-mono">Challenge</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Module 2 -->
+        <div class="curriculum-item rounded-2xl bg-[#161B22] border border-white/10 overflow-hidden transition-all duration-300">
+          <button class="curriculum-header w-full px-6 py-5 flex items-center justify-between text-left hover:bg-white/[0.02] transition-colors">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center font-mono font-bold text-sm">
+                02
+              </div>
+              <div>
+                <h3 class="text-base sm:text-lg font-bold text-white">Branching Strategies & Production Workflows</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Trunk-Based Development, GitFlow, Fast-Forward vs 3-Way Merges</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="hidden sm:inline text-xs font-mono px-2.5 py-1 bg-white/5 rounded-full text-slate-300">8 Lessons • 3h 10m</span>
+              <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transform transition-transform duration-300"></i>
+            </div>
+          </button>
+          <div class="curriculum-content hidden px-6 pb-6 pt-2 text-sm text-slate-300 border-t border-white/5 space-y-2.5">
+            <div class="flex items-center justify-between py-1.5 border-b border-white/5 text-xs">
+              <span class="flex items-center gap-2"><i data-lucide="play-circle" class="w-4 h-4 text-blue-400"></i> Fast-Forward Merges vs Recursive 3-Way Merges explained</span>
+              <span class="text-slate-400 font-mono">22m</span>
+            </div>
+            <div class="flex items-center justify-between py-1.5 border-b border-white/5 text-xs">
+              <span class="flex items-center gap-2"><i data-lucide="play-circle" class="w-4 h-4 text-blue-400"></i> Interactive Rebasing (<code class="font-mono text-purple-300">rebase -i</code>): Squash, Reword & Drop</span>
+              <span class="text-slate-400 font-mono">35m</span>
+            </div>
+            <div class="flex items-center justify-between py-1.5 text-xs">
+              <span class="flex items-center gap-2"><i data-lucide="code" class="w-4 h-4 text-emerald-400"></i> Interactive Sim: Resolving 5 nasty merge conflicts cleanly</span>
+              <span class="text-emerald-400 font-mono">Challenge</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Module 3 -->
+        <div class="curriculum-item rounded-2xl bg-[#161B22] border border-white/10 overflow-hidden transition-all duration-300">
+          <button class="curriculum-header w-full px-6 py-5 flex items-center justify-between text-left hover:bg-white/[0.02] transition-colors">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center font-mono font-bold text-sm">
+                03
+              </div>
+              <div>
+                <h3 class="text-base sm:text-lg font-bold text-white">Time Travel & Git Disaster Recovery</h3>
+                <p class="text-xs text-slate-400 mt-0.5">The Reflog Savior, Cherry-Picking, Bisecting Bugs, and Reset Modes</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="hidden sm:inline text-xs font-mono px-2.5 py-1 bg-white/5 rounded-full text-slate-300">7 Lessons • 2h 45m</span>
+              <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transform transition-transform duration-300"></i>
+            </div>
+          </button>
+          <div class="curriculum-content hidden px-6 pb-6 pt-2 text-sm text-slate-300 border-t border-white/5 space-y-2.5">
+            <div class="flex items-center justify-between py-1.5 border-b border-white/5 text-xs">
+              <span class="flex items-center gap-2"><i data-lucide="play-circle" class="w-4 h-4 text-emerald-400"></i> git reset --soft vs --mixed vs --hard step-by-step</span>
+              <span class="text-slate-400 font-mono">28m</span>
+            </div>
+            <div class="flex items-center justify-between py-1.5 border-b border-white/5 text-xs">
+              <span class="flex items-center gap-2"><i data-lucide="play-circle" class="w-4 h-4 text-emerald-400"></i> Rescuing deleted branches & lost commits using <code class="font-mono text-purple-300">git reflog</code></span>
+              <span class="text-slate-400 font-mono">33m</span>
+            </div>
+            <div class="flex items-center justify-between py-1.5 text-xs">
+              <span class="flex items-center gap-2"><i data-lucide="code" class="w-4 h-4 text-emerald-400"></i> Binary search bug detection with <code class="font-mono text-purple-300">git bisect run &lt;test&gt;</code></span>
+              <span class="text-slate-400 font-mono">25m</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Module 4 -->
+        <div class="curriculum-item rounded-2xl bg-[#161B22] border border-white/10 overflow-hidden transition-all duration-300">
+          <button class="curriculum-header w-full px-6 py-5 flex items-center justify-between text-left hover:bg-white/[0.02] transition-colors">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-xl bg-pink-500/10 border border-pink-500/20 text-pink-400 flex items-center justify-center font-mono font-bold text-sm">
+                04
+              </div>
+              <div>
+                <h3 class="text-base sm:text-lg font-bold text-white">GitHub Collaboration & High-Impact PR Reviews</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Codeowners, Branch Protection Rules, Draft PRs, and Clean Discussions</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="hidden sm:inline text-xs font-mono px-2.5 py-1 bg-white/5 rounded-full text-slate-300">5 Lessons • 2h 00m</span>
+              <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transform transition-transform duration-300"></i>
+            </div>
+          </button>
+          <div class="curriculum-content hidden px-6 pb-6 pt-2 text-sm text-slate-300 border-t border-white/5 space-y-2.5">
+            <div class="flex items-center justify-between py-1.5 border-b border-white/5 text-xs">
+              <span class="flex items-center gap-2"><i data-lucide="play-circle" class="w-4 h-4 text-pink-400"></i> Anatomy of an irresistible Pull Request description</span>
+              <span class="text-slate-400 font-mono">20m</span>
+            </div>
+            <div class="flex items-center justify-between py-1.5 border-b border-white/5 text-xs">
+              <span class="flex items-center gap-2"><i data-lucide="play-circle" class="w-4 h-4 text-pink-400"></i> Enforcing CODEOWNERS and signed GPG commits</span>
+              <span class="text-slate-400 font-mono">24m</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Module 5 -->
+        <div class="curriculum-item rounded-2xl bg-[#161B22] border border-white/10 overflow-hidden transition-all duration-300">
+          <button class="curriculum-header w-full px-6 py-5 flex items-center justify-between text-left hover:bg-white/[0.02] transition-colors">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center font-mono font-bold text-sm">
+                05
+              </div>
+              <div>
+                <h3 class="text-base sm:text-lg font-bold text-white">GitHub Actions & CI/CD Pipelines</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Automated Testing, Matrix Builds, Secrets Management, and Auto-deploy</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="hidden sm:inline text-xs font-mono px-2.5 py-1 bg-white/5 rounded-full text-slate-300">6 Lessons • 3h 20m</span>
+              <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transform transition-transform duration-300"></i>
+            </div>
+          </button>
+          <div class="curriculum-content hidden px-6 pb-6 pt-2 text-sm text-slate-300 border-t border-white/5 space-y-2.5">
+            <div class="flex items-center justify-between py-1.5 border-b border-white/5 text-xs">
+              <span class="flex items-center gap-2"><i data-lucide="play-circle" class="w-4 h-4 text-amber-400"></i> Writing custom YAML workflows from zero</span>
+              <span class="text-slate-400 font-mono">35m</span>
+            </div>
+            <div class="flex items-center justify-between py-1.5 border-b border-white/5 text-xs">
+              <span class="flex items-center gap-2"><i data-lucide="play-circle" class="w-4 h-4 text-amber-400"></i> Caching dependencies and Matrix builds across Node/Python/Go</span>
+              <span class="text-slate-400 font-mono">40m</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Module 6 -->
+        <div class="curriculum-item rounded-2xl bg-[#161B22] border border-white/10 overflow-hidden transition-all duration-300">
+          <button class="curriculum-header w-full px-6 py-5 flex items-center justify-between text-left hover:bg-white/[0.02] transition-colors">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center font-mono font-bold text-sm">
+                06
+              </div>
+              <div>
+                <h3 class="text-base sm:text-lg font-bold text-white">Open Source Hero: From First PR to Maintainer</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Issue Triage, Fork Syncing, Semantic Releases, and Community Governance</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="hidden sm:inline text-xs font-mono px-2.5 py-1 bg-white/5 rounded-full text-slate-300">5 Lessons • 2h 10m</span>
+              <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transform transition-transform duration-300"></i>
+            </div>
+          </button>
+          <div class="curriculum-content hidden px-6 pb-6 pt-2 text-sm text-slate-300 border-t border-white/5 space-y-2.5">
+            <div class="flex items-center justify-between py-1.5 border-b border-white/5 text-xs">
+              <span class="flex items-center gap-2"><i data-lucide="play-circle" class="w-4 h-4 text-indigo-400"></i> Finding high-quality "Good First Issues" in major repos</span>
+              <span class="text-slate-400 font-mono">25m</span>
+            </div>
+            <div class="flex items-center justify-between py-1.5 border-b border-white/5 text-xs">
+              <span class="flex items-center gap-2"><i data-lucide="play-circle" class="w-4 h-4 text-indigo-400"></i> Automated semantic versioning and changelog publishing</span>
+              <span class="text-slate-400 font-mono">30m</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="py-20 bg-[#0B0F15] border-y border-white/5 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-14 space-y-3">
+        <span class="text-purple-400 font-mono text-sm tracking-wider uppercase font-semibold">Dev Reviews</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Loved by Engineers at High-Velocity Teams</h2>
+        <p class="text-slate-300 text-sm sm:text-base">
+          See how developers replaced anxiety with command-line mastery and clean release habits.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Review 1 -->
+        <div class="p-6 rounded-2xl bg-[#161B22] border border-white/10 space-y-4 hover:border-purple-500/30 transition-colors">
+          <div class="flex items-center space-x-1 text-amber-400">
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+          </div>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            "Before GitForge, whenever I ran into a merge conflict, my instinct was literally to backup the repo and clone a fresh copy. Understanding how the object graph links commits completely eliminated my fear. Worth 10x the price."
+          </p>
+          <div class="flex items-center gap-3 pt-2">
+            <img class="w-10 h-10 rounded-full border border-purple-500/40" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&auto=format&fit=crop&q=80" alt="Sarah Chen" />
+            <div>
+              <h3 class="text-sm font-semibold text-white">Sarah Chen</h3>
+              <p class="text-xs text-slate-400">Senior Frontend Dev @ Vercel</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Review 2 -->
+        <div class="p-6 rounded-2xl bg-[#161B22] border border-white/10 space-y-4 hover:border-purple-500/30 transition-colors">
+          <div class="flex items-center space-x-1 text-amber-400">
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+          </div>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            "The interactive visual simulator in Module 2 was a revelation. I finally comprehend what rebase --onto actually does without needing a degree in knot theory. We now mandate this course for every new engineering hire."
+          </p>
+          <div class="flex items-center gap-3 pt-2">
+            <img class="w-10 h-10 rounded-full border border-blue-500/40" src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=120&auto=format&fit=crop&q=80" alt="Marcus Thorne" />
+            <div>
+              <h3 class="text-sm font-semibold text-white">Marcus Thorne</h3>
+              <p class="text-xs text-slate-400">Staff Platform Engineer</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Review 3 -->
+        <div class="p-6 rounded-2xl bg-[#161B22] border border-white/10 space-y-4 hover:border-purple-500/30 transition-colors">
+          <div class="flex items-center space-x-1 text-amber-400">
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+          </div>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            "The GitHub Actions module alone automated our entire test-suite matrix. In our first week after finishing the masterclass, we had two pull requests merged directly into major Kubernetes ecosystem tools."
+          </p>
+          <div class="flex items-center gap-3 pt-2">
+            <img class="w-10 h-10 rounded-full border border-emerald-500/40" src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&auto=format&fit=crop&q=80" alt="Elena Rostova" />
+            <div>
+              <h3 class="text-sm font-semibold text-white">Elena Rostova</h3>
+              <p class="text-xs text-slate-400">DevOps Specialist</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Pricing / Enrollment Tiers Section -->
+  <section id="pricing" class="py-20 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-14 space-y-3">
+        <span class="text-purple-400 font-mono text-sm tracking-wider uppercase font-semibold">Instant Access</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Invest Once in Lifelong Git Proficiency</h2>
+        <p class="text-slate-300 text-sm sm:text-base">
+          Lifetime access to updates, hands-on terminal sandbox labs, and private discord mastermind.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+        
+        <!-- Tier 1: Free Community -->
+        <div class="rounded-3xl bg-[#161B22] border border-white/10 p-8 flex flex-col justify-between hover:border-white/20 transition-all">
+          <div class="space-y-4">
+            <div class="text-xs font-mono uppercase text-slate-400 tracking-wider">Free Starter</div>
+            <h3 class="text-2xl font-bold text-white">Community Edition</h3>
+            <p class="text-sm text-slate-400">Everything you need to stop breaking master branch and understand basic Git.</p>
+            
+            <div class="pt-4 flex items-baseline gap-1">
+              <span class="text-4xl font-extrabold text-white">$0</span>
+              <span class="text-xs text-slate-400 font-mono">/ forever free</span>
+            </div>
+
+            <ul class="pt-6 space-y-3 text-xs text-slate-300">
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Module 1 (Git Fundamentals)
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Interactive Cheatsheet Access
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Community Forum Access
+              </li>
+              <li class="flex items-center gap-2.5 text-slate-400 line-through">
+                <i data-lucide="x" class="w-4 h-4 text-slate-400"></i> Advanced Disaster Recovery & Reflog
+              </li>
+              <li class="flex items-center gap-2.5 text-slate-400 line-through">
+                <i data-lucide="x" class="w-4 h-4 text-slate-400"></i> GitHub Actions & CI/CD Masterclass
+              </li>
+            </ul>
+          </div>
+
+          <a href="#sandbox" class="mt-8 w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-semibold text-center block transition-colors">
+            Start Free Now
+          </a>
+        </div>
+
+        <!-- Tier 2: Complete Pro (Highlighted) -->
+        <div class="rounded-3xl bg-gradient-to-b from-[#1E1B4B]/80 to-[#161B22] border-2 border-purple-500 p-8 flex flex-col justify-between relative shadow-2xl shadow-purple-900/30 transform lg:-translate-y-2">
+          
+          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-white text-xs font-bold uppercase tracking-wider shadow">
+            Most Popular
+          </div>
+
+          <div class="space-y-4">
+            <div class="text-xs font-mono uppercase text-purple-400 tracking-wider">Full Access</div>
+            <h3 class="text-2xl font-bold text-white">Complete Pro Bootcamp</h3>
+            <p class="text-sm text-slate-300">The end-to-end curriculum: branching, reflog recovery, GitHub Actions, and PR leadership.</p>
+            
+            <div class="pt-4 flex items-baseline gap-2">
+              <span class="text-4xl font-extrabold text-white">$69</span>
+              <span class="text-xs text-slate-400 font-mono">one-time payment</span>
+              <span class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 ml-auto border border-emerald-500/30">Save 40%</span>
+            </div>
+
+            <ul class="pt-6 space-y-3 text-xs text-slate-200">
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-purple-400"></i> <strong>All 6 Comprehensive Modules (15+ Hours)</strong>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-purple-400"></i> Interactive Browser Terminal Sandbox
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-purple-400"></i> GitHub Actions Production CI/CD Recipes
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-purple-400"></i> Emergency Reflog & Merge Conflict Toolkit
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-purple-400"></i> Verified Certificate of Git Mastery
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-purple-400"></i> Private Discord with Core Maintainers
+              </li>
+            </ul>
+          </div>
+
+          <button id="enroll-pro-btn" class="mt-8 w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white text-sm font-bold shadow-lg shadow-purple-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]">
+            Get Instant Pro Access
+          </button>
+        </div>
+
+        <!-- Tier 3: Team / Enterprise -->
+        <div class="rounded-3xl bg-[#161B22] border border-white/10 p-8 flex flex-col justify-between hover:border-white/20 transition-all">
+          <div class="space-y-4">
+            <div class="text-xs font-mono uppercase text-slate-400 tracking-wider">Engineering Teams</div>
+            <h3 class="text-2xl font-bold text-white">Team & Enterprise</h3>
+            <p class="text-sm text-slate-400">Level up your whole squad, standardize branch flows, and eliminate merge blunders.</p>
+            
+            <div class="pt-4 flex items-baseline gap-1">
+              <span class="text-4xl font-extrabold text-white">$249</span>
+              <span class="text-xs text-slate-400 font-mono">/ up to 10 seats</span>
+            </div>
+
+            <ul class="pt-6 space-y-3 text-xs text-slate-300">
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-blue-400"></i> Everything in Pro Bootcamp for 10 users
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-blue-400"></i> Team Analytics & Progress Dashboard
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-blue-400"></i> Standardized Enterprise PR Checklist
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-blue-400"></i> Live Q&A Workflow Audit Session (60m)
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-blue-400"></i> Invoice billing & VAT compliance
+              </li>
+            </ul>
+          </div>
+
+          <button id="enroll-team-btn" class="mt-8 w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-semibold text-center block transition-colors">
+            Get Team License
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Money-back guarantee badge -->
+      <div class="mt-12 text-center flex items-center justify-center gap-2 text-xs text-slate-400">
+        <i data-lucide="shield-check" class="w-4 h-4 text-purple-400"></i>
+        <span>14-day zero-risk money-back guarantee. If you don't feel 10x faster with Git, get a 100% refund.</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Frequently Asked Questions -->
+  <section id="faq" class="py-20 bg-[#0B0F15] border-t border-white/5 relative">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-12 space-y-3">
+        <span class="text-purple-400 font-mono text-sm tracking-wider uppercase font-semibold">Questions Answered</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Frequently Asked Questions</h2>
+        <p class="text-slate-300 text-sm sm:text-base">Everything you need to know about the masterclass and interactive sandbox.</p>
+      </div>
+
+      <div class="space-y-4" id="faq-container">
+        
+        <!-- FAQ 1 -->
+        <div class="faq-item rounded-xl bg-[#161B22] border border-white/10 overflow-hidden">
+          <button class="faq-toggle w-full px-6 py-4 flex items-center justify-between text-left hover:bg-white/[0.02] transition-colors">
+            <span class="font-semibold text-white text-sm sm:text-base">Why learn Git CLI when I already use a GUI client (VSCode, GitKraken, etc.)?</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transform transition-transform duration-300"></i>
+          </button>
+          <div class="faq-answer hidden px-6 pb-5 pt-1 text-xs sm:text-sm text-slate-300 leading-relaxed border-t border-white/5">
+            GUIs are fantastic for visual diffs, but they abstract away the underlying DAG model. When a merge failure happens on a CI/CD server, or a rebase stalls mid-way, or a teammate accidentally force-pushes, GUIs either lock up or give cryptic error codes. Mastering the command line teaches you the true state machine of Git so you can fix anything under pressure.
+          </div>
+        </div>
+
+        <!-- FAQ 2 -->
+        <div class="faq-item rounded-xl bg-[#161B22] border border-white/10 overflow-hidden">
+          <button class="faq-toggle w-full px-6 py-4 flex items-center justify-between text-left hover:bg-white/[0.02] transition-colors">
+            <span class="font-semibold text-white text-sm sm:text-base">Is this suitable for a total beginner who just installed Git?</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transform transition-transform duration-300"></i>
+          </button>
+          <div class="faq-answer hidden px-6 pb-5 pt-1 text-xs sm:text-sm text-slate-300 leading-relaxed border-t border-white/5">
+            Yes! Module 1 assumes zero prior terminal experience and guides you through configuring user credentials, setting up your SSH keys on GitHub, making your first atomic commit, and understanding the 4 stages.
+          </div>
+        </div>
+
+        <!-- FAQ 3 -->
+        <div class="faq-item rounded-xl bg-[#161B22] border border-white/10 overflow-hidden">
+          <button class="faq-toggle w-full px-6 py-4 flex items-center justify-between text-left hover:bg-white/[0.02] transition-colors">
+            <span class="font-semibold text-white text-sm sm:text-base">Does this course cover GitHub Actions & CI/CD?</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transform transition-transform duration-300"></i>
+          </button>
+          <div class="faq-answer hidden px-6 pb-5 pt-1 text-xs sm:text-sm text-slate-300 leading-relaxed border-t border-white/5">
+            Absolutely. Module 5 is dedicated entirely to GitHub Actions: writing YAML triggers, dependency caching, setting up automated testing matrices for Node.js, Python, and Go, protecting release branches, and deploying to AWS/Cloudflare.
+          </div>
+        </div>
+
+        <!-- FAQ 4 -->
+        <div class="faq-item rounded-xl bg-[#161B22] border border-white/10 overflow-hidden">
+          <button class="faq-toggle w-full px-6 py-4 flex items-center justify-between text-left hover:bg-white/[0.02] transition-colors">
+            <span class="font-semibold text-white text-sm sm:text-base">How long do I have access to the materials?</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transform transition-transform duration-300"></i>
+          </button>
+          <div class="faq-answer hidden px-6 pb-5 pt-1 text-xs sm:text-sm text-slate-300 leading-relaxed border-t border-white/5">
+            Lifetime access. As GitHub rolls out new features (like new CLI commands, Copilot PR summaries, or security secret scanners), we update the course curriculum continually at no additional charge.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-12 bg-[#080B0F] border-t border-white/10 text-slate-400 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
+        <div class="space-y-3">
+          <div class="flex items-center space-x-2">
+            <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-purple-600 to-blue-500 p-0.5 flex items-center justify-center">
+              <i data-lucide="git-merge" class="w-4 h-4 text-white"></i>
+            </div>
+            <span class="text-base font-bold text-white tracking-tight">GitForge</span>
+          </div>
+          <p class="text-slate-400 leading-relaxed">
+            The definitive training ground for modern software developers seeking mastery over Git, GitHub Flow, and CI/CD pipelines.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="text-white font-semibold mb-3 text-sm">Interactive Labs</h4>
+          <ul class="space-y-2">
+            <li><a href="#simulator" class="hover:text-purple-400 transition-colors">Visual Workflow Graph</a></li>
+            <li><a href="#sandbox" class="hover:text-purple-400 transition-colors">Terminal Challenge Sandbox</a></li>
+            <li><a href="#cheatsheet" class="hover:text-purple-400 transition-colors">Command Cheatsheet</a></li>
+            <li><a href="#curriculum" class="hover:text-purple-400 transition-colors">Syllabus Breakdown</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-white font-semibold mb-3 text-sm">Community & Resources</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="hover:text-purple-400 transition-colors">Open Source Handbook</a></li>
+            <li><a href="#" class="hover:text-purple-400 transition-colors">Reflog Emergency Guide</a></li>
+            <li><a href="#" class="hover:text-purple-400 transition-colors">Discord Developer Mastermind</a></li>
+            <li><a href="#" class="hover:text-purple-400 transition-colors">GitHub Repository</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-white font-semibold mb-3 text-sm">Weekly Git Tip</h4>
+          <p class="text-slate-400 mb-3">Get bite-sized Git tips and CI/CD blueprints every Tuesday morning.</p>
+          <form id="newsletter-form" class="space-y-2" onsubmit="event.preventDefault(); alertModal('Subscribed! Check your inbox for your first tip.');">
+            <input 
+              type="email" 
+              placeholder="developer@company.com" 
+              required
+              aria-label="Email address for weekly tips"
+              class="w-full px-3 py-2 bg-[#161B22] border border-white/10 rounded-lg text-slate-100 placeholder-slate-400 focus:outline-none focus:border-purple-500 font-mono text-xs"
+            />
+            <button type="submit" class="w-full py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-semibold transition-colors">
+              Subscribe Free
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p>&copy; 2026 GitForge Masterclass. Built for software engineers worldwide.</p>
+        <div class="flex items-center space-x-6 text-slate-400">
+          <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+          <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+          <a href="#" class="hover:text-white transition-colors">GitHub Sponsors</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- Notification Modal / Dialog Replacement (never native alert) -->
+  <div id="custom-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="w-full max-w-md bg-[#161B22] border border-purple-500/30 rounded-2xl p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center">
+          <i data-lucide="check-circle" class="w-5 h-5"></i>
+        </div>
+        <h3 class="text-base font-bold text-white" id="modal-title">Notification</h3>
+      </div>
+      <p class="text-sm text-slate-300 leading-relaxed" id="modal-message">
+        Action executed successfully.
+      </p>
+      <div class="pt-2 flex justify-end">
+        <button id="modal-close-btn" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold">
+          Dismiss
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Lucide Icons initialization
+    lucide.createIcons();
+
+    // Modal Utility to replace window.alert
+    function alertModal(message, title = "GitForge Notice") {
+      const modal = document.getElementById('custom-modal');
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-message').innerText = message;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    document.getElementById('modal-close-btn').addEventListener('click', () => {
+      const modal = document.getElementById('custom-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    });
+
+    // Theme Toggle Logic
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    themeToggleBtn.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      lucide.createIcons();
+    });
+
+    // Mobile Navigation Drawer Toggle
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileDrawer = document.getElementById('mobile-drawer');
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileDrawer.classList.toggle('hidden');
+    });
+
+    document.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileDrawer.classList.add('hidden');
+      });
+    });
+
+    // Hero Animated Terminal
+    const heroTerminalBody = document.getElementById('hero-terminal-body');
+    const terminalScript = [
+      { text: '$ git status', type: 'cmd', delay: 400 },
+      { text: 'On branch main\nChanges not staged for commit:\n  modified:   src/auth/jwt.js\n  modified:   src/api/routes.js', type: 'output', delay: 600 },
+      { text: '$ git add src/auth/jwt.js src/api/routes.js', type: 'cmd', delay: 700 },
+      { text: '$ git commit -m "feat(auth): integrate OAuth2 and refresh tokens"', type: 'cmd', delay: 800 },
+      { text: '[main 94a1b02] feat(auth): integrate OAuth2 and refresh tokens\n 2 files changed, 84 insertions(+), 12 deletions(-)', type: 'output', delay: 700 },
+      { text: '$ git push origin main', type: 'cmd', delay: 600 },
+      { text: 'Enumerating objects: 7, done.\nWriting objects: 100% (7/7), 1.42 KiB | 1.42 MiB/s, done.\nTo github.com:gitforge/app.git\n   c4e031a..94a1b02  main -> main', type: 'output', delay: 800 },
+      { text: '✓ GitHub Actions: Build & Tests PASSED (42s)', type: 'success', delay: 1000 }
+    ];
+
+    let currentStep = 0;
+    let heroTimeout = null;
+
+    function playTerminalAnimation() {
+      clearTimeout(heroTimeout);
+      heroTerminalBody.innerHTML = '';
+      currentStep = 0;
+
+      function step() {
+        if (currentStep >= terminalScript.length) {
+          return;
+        }
+
+        const item = terminalScript[currentStep];
+        const line = document.createElement('div');
+
+        if (item.type === 'cmd') {
+          line.className = 'text-white flex items-center gap-1.5 font-semibold';
+          line.innerHTML = `<span class="text-purple-400 select-none">❯</span> <span>${item.text.replace('$ ', '')}</span>`;
+        } else if (item.type === 'output') {
+          line.className = 'text-slate-400 whitespace-pre-line pl-3 border-l border-white/5 my-1';
+          line.textContent = item.text;
+        } else if (item.type === 'success') {
+          line.className = 'text-emerald-400 font-bold bg-emerald-950/30 p-2 rounded border border-emerald-500/20';
+          line.textContent = item.text;
+        }
+
+        heroTerminalBody.appendChild(line);
+        heroTerminalBody.scrollTop = heroTerminalBody.scrollHeight;
+        currentStep++;
+
+        heroTimeout = setTimeout(step, item.delay);
+      }
+
+      step();
+    }
+
+    playTerminalAnimation();
+    document.getElementById('terminal-replay-btn').addEventListener('click', playTerminalAnimation);
+
+    // Visual Git Simulator Logic
+    const simulatorState = {
+      workingModified: false,
+      stagedCount: 0,
+      commits: [
+        { id: 'c1', hash: 'e4f201a', msg: 'initial commit', branch: 'main', pushed: true }
+      ],
+      activeBranch: 'main',
+      branches: ['main']
+    };
+
+    const zoneWorking = document.getElementById('zone-working');
+    const workingContainer = document.getElementById('working-files-container');
+    const workingStatus = document.getElementById('working-status');
+    const stagingContainer = document.getElementById('staging-files-container');
+    const stagingStatus = document.getElementById('staging-status');
+    const localCommitsContainer = document.getElementById('local-commits-container');
+    const remoteCommitsContainer = document.getElementById('remote-commits-container');
+    const remoteStatus = document.getElementById('remote-status');
+    const simFeedbackMsg = document.getElementById('sim-feedback-msg');
+    const simActiveBranchEl = document.getElementById('sim-active-branch');
+
+    function renderSimulatorUI() {
+      // 1. Working directory
+      workingContainer.innerHTML = '';
+      if (simulatorState.workingModified) {
+        workingContainer.innerHTML = `
+          <div class="file-item p-2.5 rounded-lg bg-amber-950/30 border border-amber-500/30 text-xs font-mono flex items-center justify-between text-amber-200 animate-pulse">
+            <span class="flex items-center gap-1.5"><i data-lucide="file-diff" class="w-3.5 h-3.5 text-amber-400"></i> feature.js</span>
+            <span class="text-[10px] bg-amber-500/20 px-1.5 py-0.5 rounded text-amber-300">modified</span>
+          </div>
+          <div class="file-item p-2 rounded bg-white/5 border border-white/5 text-xs font-mono text-slate-400">
+            <span>app.js (tracked)</span>
+          </div>
+        `;
+        workingStatus.innerText = '1 modified file';
+        workingStatus.className = 'text-amber-400 font-bold';
+      } else {
+        workingContainer.innerHTML = `
+          <div class="file-item p-2.5 rounded-lg bg-white/5 border border-white/5 text-xs font-mono flex items-center justify-between text-slate-300">
+            <span class="flex items-center gap-1.5"><i data-lucide="file-check" class="w-3.5 h-3.5 text-emerald-400"></i> app.js</span>
+            <span class="text-[10px] text-slate-400">clean</span>
+          </div>
+        `;
+        workingStatus.innerText = 'Directory Clean';
+        workingStatus.className = 'text-emerald-400';
+      }
+
+      // 2. Staging Area
+      stagingContainer.innerHTML = '';
+      if (simulatorState.stagedCount > 0) {
+        stagingContainer.innerHTML = `
+          <div class="file-item p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-500/40 text-xs font-mono flex items-center justify-between text-emerald-200">
+            <span class="flex items-center gap-1.5"><i data-lucide="file-plus-2" class="w-3.5 h-3.5 text-emerald-400"></i> feature.js</span>
+            <span class="text-[10px] bg-emerald-500/20 px-1.5 py-0.5 rounded text-emerald-300">staged (index)</span>
+          </div>
+        `;
+        stagingStatus.innerText = `${simulatorState.stagedCount} file staged`;
+      } else {
+        stagingContainer.innerHTML = `
+          <div class="empty-state text-center text-xs text-slate-400 my-auto py-8">
+            No files staged for commit.<br><span class="text-[11px] text-slate-400 font-mono">Run 'git add'</span>
+          </div>
+        `;
+        stagingStatus.innerText = '0 files';
+      }
+
+      // 3. Local Repo Commits
+      localCommitsContainer.innerHTML = '';
+      simulatorState.commits.slice().reverse().forEach(c => {
+        const commitEl = document.createElement('div');
+        commitEl.className = 'node-commit p-2 rounded-lg bg-white/5 border border-white/10 text-xs font-mono space-y-1';
+        commitEl.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-purple-400 font-bold">${c.hash}</span>
+            <span class="text-[10px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-sans">${c.branch}</span>
+          </div>
+          <div class="text-slate-300 truncate">${c.msg}</div>
+        `;
+        localCommitsContainer.appendChild(commitEl);
+      });
+
+      // 4. Remote GitHub Commits
+      remoteCommitsContainer.innerHTML = '';
+      const pushedCommits = simulatorState.commits.filter(c => c.pushed);
+      pushedCommits.slice().reverse().forEach(c => {
+        const remoteEl = document.createElement('div');
+        remoteEl.className = 'node-commit p-2 rounded-lg bg-blue-950/20 border border-blue-500/20 text-xs font-mono space-y-1';
+        remoteEl.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-blue-400 font-bold">${c.hash}</span>
+            <span class="text-[10px] text-slate-400">origin/${c.branch}</span>
+          </div>
+          <div class="text-slate-300 truncate">${c.msg}</div>
+        `;
+        remoteCommitsContainer.appendChild(remoteEl);
+      });
+
+      // Check sync state
+      const unpushedCount = simulatorState.commits.filter(c => !c.pushed).length;
+      if (unpushedCount > 0) {
+        remoteStatus.innerText = `${unpushedCount} commit(s) ahead`;
+        remoteStatus.className = 'text-amber-400 font-bold';
+      } else {
+        remoteStatus.innerText = 'Synchronized with origin';
+        remoteStatus.className = 'text-emerald-400';
+      }
+
+      simActiveBranchEl.innerText = simulatorState.activeBranch;
+      lucide.createIcons();
+    }
+
+    // Simulator Interaction Handlers
+    document.getElementById('sim-btn-edit').addEventListener('click', () => {
+      simulatorState.workingModified = true;
+      simFeedbackMsg.innerHTML = "Working directory updated: <span class='text-amber-300'>feature.js</span> changed! Next step: click <strong>2. git add .</strong> to stage it.";
+      renderSimulatorUI();
+    });
+
+    document.getElementById('sim-btn-add').addEventListener('click', () => {
+      if (!simulatorState.workingModified) {
+        simFeedbackMsg.innerHTML = "Nothing to add! Click '1. Edit File' first to generate unstaged code changes.";
+        return;
+      }
+      simulatorState.stagedCount = 1;
+      simFeedbackMsg.innerHTML = "File staged! The changes now reside in Git's <strong>Index / Staging Area</strong>. Next: click <strong>3. git commit -m</strong>.";
+      renderSimulatorUI();
+    });
+
+    document.getElementById('sim-btn-commit').addEventListener('click', () => {
+      if (simulatorState.stagedCount === 0) {
+        simFeedbackMsg.innerHTML = "Staging area is empty! Nothing to commit. Run 'git add .' first.";
+        return;
+      }
+      const randomHash = Math.random().toString(16).substring(2, 9);
+      const commitObj = {
+        id: 'c' + (simulatorState.commits.length + 1),
+        hash: randomHash,
+        msg: simulatorState.activeBranch === 'feat/auth' ? 'feat(auth): token validation' : 'feat: add feature pipeline',
+        branch: simulatorState.activeBranch,
+        pushed: false
+      };
+      simulatorState.commits.push(commitObj);
+      simulatorState.workingModified = false;
+      simulatorState.stagedCount = 0;
+      simFeedbackMsg.innerHTML = `Commit created in local repository: <span class='text-purple-300 font-mono'>${randomHash}</span>. Click <strong>4. git push origin</strong> to mirror it to GitHub!`;
+      renderSimulatorUI();
+    });
+
+    document.getElementById('sim-btn-push').addEventListener('click', () => {
+      let count = 0;
+      simulatorState.commits.forEach(c => {
+        if (!c.pushed) {
+          c.pushed = true;
+          count++;
+        }
+      });
+      if (count === 0) {
+        simFeedbackMsg.innerHTML = "Everything up-to-date! No unpushed commits found in local repository.";
+      } else {
+        simFeedbackMsg.innerHTML = `Pushed ${count} commit(s) successfully to <span class='text-blue-300 font-mono'>origin/${simulatorState.activeBranch}</span> on GitHub!`;
+      }
+      renderSimulatorUI();
+    });
+
+    document.getElementById('sim-btn-branch').addEventListener('click', () => {
+      if (simulatorState.activeBranch === 'feat/auth') {
+        simulatorState.activeBranch = 'main';
+        simFeedbackMsg.innerHTML = "Switched back to branch <span class='text-purple-300 font-mono'>main</span>.";
+      } else {
+        simulatorState.activeBranch = 'feat/auth';
+        if (!simulatorState.branches.includes('feat/auth')) {
+          simulatorState.branches.push('feat/auth');
+        }
+        simFeedbackMsg.innerHTML = "Created and switched to feature branch <span class='text-pink-300 font-mono'>feat/auth</span> via <code class='text-pink-200'>git checkout -b feat/auth</code>.";
+      }
+      renderSimulatorUI();
+    });
+
+    document.getElementById('sim-btn-reset').addEventListener('click', () => {
+      simulatorState.workingModified = false;
+      simulatorState.stagedCount = 0;
+      simulatorState.commits = [
+        { id: 'c1', hash: 'e4f201a', msg: 'initial commit', branch: 'main', pushed: true }
+      ];
+      simulatorState.activeBranch = 'main';
+      simFeedbackMsg.innerText = "Simulator state reset back to initial commit.";
+      renderSimulatorUI();
+    });
+
+    renderSimulatorUI();
+
+    // Cheatsheet Data
+    const cheatsheetData = [
+      {
+        tag: 'everyday',
+        command: 'git status -s',
+        title: 'Compact Working Status',
+        desc: 'Lists modified, unstaged, and untracked files with brief two-letter code indicators.',
+        example: 'M  src/index.js\n?? tests/spec.js'
+      },
+      {
+        tag: 'everyday',
+        command: 'git add -p',
+        title: 'Interactive Patch Staging',
+        desc: 'Interactively stages individual chunks (hunks) of changes instead of whole files.',
+        example: 'Stage this hunk [y,n,q,a,d,s,e,?]? y'
+      },
+      {
+        tag: 'everyday',
+        command: 'git commit --amend --no-edit',
+        title: 'Amend Last Commit',
+        desc: 'Adds newly staged files directly to the previous commit without changing the commit message.',
+        example: '[main 58b29c1] add missed formatting'
+      },
+      {
+        tag: 'branching',
+        command: 'git switch -c feature/new-flow',
+        title: 'Create & Switch Branch',
+        desc: 'Modern replacement for git checkout -b to avoid argument collision.',
+        example: "Switched to a new branch 'feature/new-flow'"
+      },
+      {
+        tag: 'branching',
+        command: 'git branch -vv',
+        title: 'Detailed Branch Tracking',
+        desc: 'Lists all local branches with their upstream tracking branch, commit SHA, and sync delta.',
+        example: '* main 94a1b02 [origin/main: ahead 1] chore: cleanup'
+      },
+      {
+        tag: 'branching',
+        command: 'git rebase -i HEAD~3',
+        title: 'Interactive Rebase',
+        desc: 'Squash, edit, reorder, or drop the last 3 commits before submitting a PR.',
+        example: 'pick 3a2c01 feat: init\nsquash 48e91b test: coverage'
+      },
+      {
+        tag: 'undoing',
+        command: 'git reflog',
+        title: 'The Reflog Emergency Savior',
+        desc: 'Reference log recording every single HEAD movement. Rescues "deleted" branches and hard-resets.',
+        example: '94a1b02 HEAD@{0}: commit: fix\ne4f201a HEAD@{1}: checkout: main'
+      },
+      {
+        tag: 'undoing',
+        command: 'git reset --soft HEAD~1',
+        title: 'Undo Commit (Keep Changes Staged)',
+        desc: 'Undoes the last commit while preserving all altered code ready in the staging area.',
+        example: 'HEAD is now at c4e031a feat: base config'
+      },
+      {
+        tag: 'undoing',
+        command: 'git restore --staged <file>',
+        title: 'Unstage Staged File',
+        desc: 'Safely removes a file from the index back to the unstaged working tree without losing code.',
+        example: 'Unstaged changes after reset: M config.env'
+      },
+      {
+        tag: 'remote',
+        command: 'git push -u origin <branch>',
+        title: 'Push & Set Upstream',
+        desc: 'Pushes branch to remote and configures it so subsequent git push/pull requires no arguments.',
+        example: "Branch 'feature' set up to track 'origin/feature'."
+      },
+      {
+        tag: 'remote',
+        command: 'gh pr create --web',
+        title: 'Create Pull Request (GitHub CLI)',
+        desc: 'Opens the prefilled GitHub PR interface in your browser immediately.',
+        example: 'Opening github.com/repo/compare/feat in your browser'
+      },
+      {
+        tag: 'remote',
+        command: 'git remote prune origin',
+        title: 'Prune Stale Remote Branches',
+        desc: 'Deletes local tracking references for branches that have been merged and deleted on GitHub.',
+        example: 'Pruning origin\nURL: https://github.com/...\n * [pruned] origin/feat/expired'
+      }
+    ];
+
+    const cheatsheetGrid = document.getElementById('cheatsheet-grid');
+    const cheatsheetSearch = document.getElementById('cheatsheet-search');
+    const filterButtons = document.querySelectorAll('.cs-filter-btn');
+    const copyToast = document.getElementById('copy-toast');
+    let currentTag = 'all';
+
+    function copyToClipboard(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        copyToast.classList.remove('translate-y-20', 'opacity-0');
+        setTimeout(() => {
+          copyToast.classList.add('translate-y-20', 'opacity-0');
+        }, 2200);
+      } catch (err) {
+        console.error('Copy fallback failed', err);
+      }
+      document.body.removeChild(textarea);
+    }
+
+    function renderCheatsheet() {
+      const query = cheatsheetSearch.value.toLowerCase().trim();
+      cheatsheetGrid.innerHTML = '';
+
+      const filtered = cheatsheetData.filter(item => {
+        const matchesTag = currentTag === 'all' || item.tag === currentTag;
+        const matchesSearch = item.command.toLowerCase().includes(query) ||
+                              item.title.toLowerCase().includes(query) ||
+                              item.desc.toLowerCase().includes(query);
+        return matchesTag && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        cheatsheetGrid.innerHTML = `
+          <div class="col-span-full text-center py-12 text-slate-400">
+            <i data-lucide="help-circle" class="w-8 h-8 mx-auto mb-2 text-slate-500"></i>
+            No matching commands found. Try searching for "branch", "reset", or "remote".
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      filtered.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'group rounded-2xl bg-[#161B22] border border-white/10 p-5 hover:border-purple-500/40 transition-all flex flex-col justify-between';
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-white/5 text-purple-300 border border-white/5">
+                ${item.tag}
+              </span>
+              <button class="copy-cmd-btn p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors" title="Copy command">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+
+            <h3 class="text-base font-bold text-white mb-1.5">${item.title}</h3>
+            <p class="text-xs text-slate-400 leading-relaxed mb-4">${item.desc}</p>
+          </div>
+
+          <div class="space-y-2">
+            <div class="p-2.5 rounded-xl bg-[#0D1117] border border-white/5 text-purple-300 font-mono text-xs flex items-center justify-between">
+              <code class="break-all">${item.command}</code>
+            </div>
+            <div class="p-2 rounded-lg bg-[#11141A] border border-white/5 text-[11px] font-mono text-slate-400 overflow-x-auto whitespace-pre">
+              <span class="text-slate-400 font-sans block text-[9px] uppercase tracking-wider mb-0.5">Sample Output</span>${item.example}
+            </div>
+          </div>
+        `;
+
+        card.querySelector('.copy-cmd-btn').addEventListener('click', () => {
+          copyToClipboard(item.command);
+        });
+
+        cheatsheetGrid.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    cheatsheetSearch.addEventListener('input', renderCheatsheet);
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => {
+          b.className = 'cs-filter-btn px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 border border-white/5 transition-colors';
+        });
+        btn.className = 'cs-filter-btn px-3.5 py-1.5 rounded-lg text-xs font-medium bg-purple-600 text-white transition-colors';
+        currentTag = btn.getAttribute('data-tag');
+        renderCheatsheet();
+      });
+    });
+
+    renderCheatsheet();
+
+    // Terminal Challenge Sandbox
+    const challenges = [
+      {
+        id: 1,
+        title: 'Mission 1: Stage All Modifications',
+        desc: 'Files in your workspace have changed. Stage all modified code into the index.',
+        solutionRegex: /^git\s+add\s+(\.|\-A|\-\-all)$/,
+        hint: 'Use "git add ." or "git add -A"',
+        successMsg: 'Outstanding! All working files are now indexed in the staging area.'
+      },
+      {
+        id: 2,
+        title: 'Mission 2: Check Staged Status',
+        desc: 'Verify which files are staged before committing.',
+        solutionRegex: /^git\s+status(\s+\-s)?$/,
+        hint: 'Run "git status"',
+        successMsg: 'Nice! Working tree status inspected.'
+      },
+      {
+        id: 3,
+        title: 'Mission 3: Commit with Message',
+        desc: 'Create an atomic commit with a message describing your change.',
+        solutionRegex: /^git\s+commit\s+\-m\s+["'].+["']$/,
+        hint: 'Try: git commit -m "feat: initial feature"',
+        successMsg: 'Commit snapshot registered into the local repository graph!'
+      },
+      {
+        id: 4,
+        title: 'Mission 4: Push to Remote',
+        desc: 'Send your committed code to the GitHub remote repository.',
+        solutionRegex: /^git\s+push(\s+origin\s+main|\s+\-u\s+origin\s+main)?$/,
+        hint: 'Type "git push" or "git push origin main"',
+        successMsg: 'PR-ready! Your commits are now live on GitHub origin.'
+      }
+    ];
+
+    let activeChallengeIndex = 0;
+    const sandboxOutput = document.getElementById('sandbox-output');
+    const sandboxForm = document.getElementById('sandbox-form');
+    const sandboxInput = document.getElementById('sandbox-input');
+    const challengeTitle = document.getElementById('challenge-title');
+    const challengeDesc = document.getElementById('challenge-desc');
+    const challengeCounter = document.getElementById('challenge-counter');
+
+    function updateChallengeDisplay() {
+      const ch = challenges[activeChallengeIndex];
+      challengeTitle.innerText = ch.title;
+      challengeDesc.innerText = ch.desc;
+      challengeCounter.innerText = `${activeChallengeIndex + 1} of ${challenges.length}`;
+    }
+
+    document.getElementById('prev-challenge-btn').addEventListener('click', () => {
+      if (activeChallengeIndex > 0) {
+        activeChallengeIndex--;
+        updateChallengeDisplay();
+      }
+    });
+
+    document.getElementById('next-challenge-btn').addEventListener('click', () => {
+      if (activeChallengeIndex < challenges.length - 1) {
+        activeChallengeIndex++;
+        updateChallengeDisplay();
+      }
+    });
+
+    updateChallengeDisplay();
+
+    function appendTerminalLine(content, isHtml = false, colorClass = "text-slate-300") {
+      const line = document.createElement('div');
+      line.className = `${colorClass} leading-relaxed`;
+      if (isHtml) {
+        line.innerHTML = content;
+      } else {
+        line.textContent = content;
+      }
+      sandboxOutput.appendChild(line);
+      sandboxOutput.scrollTop = sandboxOutput.scrollHeight;
+    }
+
+    document.getElementById('clear-sandbox-btn').addEventListener('click', () => {
+      sandboxOutput.innerHTML = '';
+      appendTerminalLine("Terminal cleared. Ready for input.", false, "text-slate-400");
+    });
+
+    sandboxForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const rawCmd = sandboxInput.value.trim();
+      if (!rawCmd) return;
+
+      appendTerminalLine(`developer@gitforge:~$ ${rawCmd}`, false, "text-white font-bold");
+      sandboxInput.value = '';
+
+      const cmd = rawCmd.toLowerCase();
+      const activeCh = challenges[activeChallengeIndex];
+
+      // Built-in utility commands
+      if (cmd === 'help') {
+        appendTerminalLine(`
+Available Sandbox Commands:
+  git status            - Inspect working and staging state
+  git add .             - Stage all modified files
+  git commit -m "msg"   - Commit staged snapshot
+  git push origin main  - Send commits to GitHub
+  git log               - View commit history
+  git branch            - List current branches
+  hint                  - Display hint for current mission
+  clear                 - Clear console output
+        `, false, 'text-purple-300 font-mono whitespace-pre-line');
+        return;
+      }
+
+      if (cmd === 'clear') {
+        sandboxOutput.innerHTML = '';
+        return;
+      }
+
+      if (cmd === 'hint') {
+        appendTerminalLine(`Hint: ${activeCh.hint}`, false, 'text-amber-300');
+        return;
+      }
+
+      // Check current challenge matching
+      if (activeCh.solutionRegex.test(rawCmd)) {
+        appendTerminalLine(`✔ [PASSED] ${activeCh.successMsg}`, false, 'text-emerald-400 font-bold');
+        if (activeChallengeIndex < challenges.length - 1) {
+          activeChallengeIndex++;
+          updateChallengeDisplay();
+          appendTerminalLine(`→ Next challenge unlocked: ${challenges[activeChallengeIndex].title}`, false, 'text-purple-300');
+        } else {
+          appendTerminalLine(`★ ALL MISSIONS COMPLETE! You are Git certified.`, false, 'text-amber-400 font-bold');
+        }
+        return;
+      }
+
+      // Arbitrary mock responses for exploration
+      if (cmd === 'git status') {
+        appendTerminalLine("On branch main\nChanges not staged for commit:\n  modified: src/main.rs\n\nno changes added to commit (use 'git add')", false, 'text-slate-400 whitespace-pre-line');
+      } else if (cmd.startsWith('git add')) {
+        appendTerminalLine("Staged changes ready for commit.", false, 'text-emerald-400');
+      } else if (cmd.startsWith('git commit')) {
+        appendTerminalLine("[main b78e204] Commit registered successfully.", false, 'text-purple-300');
+      } else if (cmd.startsWith('git push')) {
+        appendTerminalLine("Branch 'main' up to date with remote 'origin/main'.", false, 'text-blue-300');
+      } else if (cmd === 'git log' || cmd === 'git log --oneline') {
+        appendTerminalLine("b78e204 (HEAD -> main) feat: enhance performance\ne4f201a initial commit", false, 'text-slate-400 whitespace-pre-line');
+      } else if (cmd === 'git branch') {
+        appendTerminalLine("* main\n  feat/auth", false, 'text-emerald-400 whitespace-pre-line');
+      } else {
+        appendTerminalLine(`Command evaluated. Check objective or type 'hint' for guidance.`, false, 'text-slate-400');
+      }
+    });
+
+    // Curriculum Accordions
+    document.querySelectorAll('.curriculum-header').forEach(header => {
+      header.addEventListener('click', () => {
+        const content = header.nextElementSibling;
+        const icon = header.querySelector('i[data-lucide="chevron-down"]');
+        
+        const isHidden = content.classList.contains('hidden');
+        if (isHidden) {
+          content.classList.remove('hidden');
+          icon.classList.add('rotate-180');
+        } else {
+          content.classList.add('hidden');
+          icon.classList.remove('rotate-180');
+        }
+      });
+    });
+
+    // FAQ Accordions
+    document.querySelectorAll('.faq-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const answer = btn.nextElementSibling;
+        const icon = btn.querySelector('i[data-lucide="chevron-down"]');
+        const isHidden = answer.classList.contains('hidden');
+        if (isHidden) {
+          answer.classList.remove('hidden');
+          icon.classList.add('rotate-180');
+        } else {
+          answer.classList.add('hidden');
+          icon.classList.remove('rotate-180');
+        }
+      });
+    });
+
+    // Enrollment Mock Triggers
+    document.getElementById('enroll-pro-btn').addEventListener('click', () => {
+      alertModal('Welcome to GitForge Pro! Redirecting to secure checkout with early-bird guarantee.', 'Pro Enrollment');
+    });
+
+    document.getElementById('enroll-team-btn').addEventListener('click', () => {
+      alertModal('Team licensing inquiry initialized. Our engineering coordinator will email your team onboarding dashboard link.', 'Team Enterprise License');
+    });
+  </script>
+</body>
+</html>
