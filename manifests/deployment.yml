@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: gigga 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gigga
+  template:
+    metadata:
+      labels:
+        app: gigga 
+    spec:
+      containers:
+        - name: gigga 
+          image: saaddevopsacr.azurecr.io/gigga
+          ports:
+          - containerPort: 80
